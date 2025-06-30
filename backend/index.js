@@ -43,7 +43,7 @@ app.post('/entry', (req, res) => {
   client.connect(raspberryPiPort, raspberryPiIp, () => {
     console.log(`Connected to Raspberry Pi at ${raspberryPiIp}:${raspberryPiPort}`);
     // Sending ID and status 1 for entry
-    client.write(`${id} 1`);
+    client.write(`${id},entry`);
   });
 
   client.on('data', (data) => {
@@ -75,8 +75,8 @@ app.post('/exit', (req, res) => {
 
   client.connect(raspberryPiPort, raspberryPiIp, () => {
     console.log(`Connected to Raspberry Pi at ${raspberryPiIp}:${raspberryPiPort}`);
-    // Sending ID and status 1 for entry
-    client.write(`${id} 0`);
+    // Sending ID and status 0 for exit
+    client.write(`${id},exit`);
   });
 
   client.on('data', (data) => {

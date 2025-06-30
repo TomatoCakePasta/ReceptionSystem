@@ -1,4 +1,4 @@
-g_status = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+g_status = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
 fetch('./json/config.json')
     .then(response => response.json())
