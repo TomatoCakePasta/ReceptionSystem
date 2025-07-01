@@ -139,9 +139,9 @@ def generate_gradient():
         start = colors[i]
         end = colors[i + 1]
         gradient += interpolate_rgb(start, end, steps_per_transition)
-    return gradient
-
-gradient = generate_gradient()
+    
+    for i, color in enumerate(gradient):
+        strip.set_pixel_color(i, color)
 
 if __name__ == "__main__":
     
@@ -149,6 +149,8 @@ if __name__ == "__main__":
     strip = WS2812SpiDriver(spi_bus=0, spi_device=0, led_count=led_nums).get_strip()
     
     #reset()
+
+    # generate_gradient()
     
     while True:
         strip.show()
