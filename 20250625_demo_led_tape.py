@@ -142,58 +142,13 @@ if __name__ == "__main__":
     # Initialize the WS2812 strip with 100 leds and SPI channel 0, CE0
     strip = WS2812SpiDriver(spi_bus=0, spi_device=0, led_count=led_nums).get_strip()
     
-    """
-    for i, color in enumerate(gradient):
-        strip.set_pixel_color(i, color)
-    # strip.show()
-    start_led()
-    """
-    
     #reset()
     
     while True:
         strip.show()
         
-        """
-        client, addr = sv.accept()
-        data = client.recv(1024)
-        if len(data) == 0:
-            break
-        
-        print(data)
-        client.close()
-        """
-        
-        """
-        strip.set_all_pixels(Color(255, 0, 0))
-        strip.show()
-        time.sleep(2)
-        strip.set_all_pixels(Color(0, 255, 0))
-        strip.show()
-        time.sleep(2)
-        """
-        
-        
-        """
-        set_led(current_id)
-        set_led(current_id + 2)
-        """
-        
         # test_all_pattern()
         
         # pinpong()
-        """
-        strip.show()
-        strip.clear()
-        """
-        # time.sleep(1)
-        
-        
-        """
-        current_id += k
-        
-        if (current_id == 33) or (current_id == 0):
-            print("Turn")
-            k *= -1
-            """
+    
         
