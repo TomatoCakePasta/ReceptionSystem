@@ -30,13 +30,15 @@ def handle_accept(server_socket):
         data = data.decode("utf-8")
         # print(data)
         
-        idx_str, status = data.strip().split(',')
+        idx_str, status, str_r, str_g, str_b = data.strip().split(',')
         idx = int(idx_str)
         
+        set_color = Color(int(str_r), int(str_g), int(str_b))
+
         print("id: " + str(idx) + " status: " + status)
         client.close()
-        
-        set_led(idx, status)
+
+        set_led(idx, status, set_color)
         
         
 
@@ -67,13 +69,17 @@ def test_all_pattern():
     # one color change -> red, gree, blue, yellow, white
     for color in test_colors:
         print(color)
-        strip.set_all_pixels(color)
+        # strip.set_all_pixels(color)
+        for led_i in range(48):
+            strip.set_pixel_color(led_i, color)
+        start_led(1)
         # strip.set_pixel_color(2, Color(255, 255, 255))
-        start_led(2)
+    reset()
+    start_led(1)
 
 
 # turn on the LED of the corresponding ID
-def set_led(id, status="null"):
+def set_led(id, status="null", color = Color(255, 0, 0)):
     # size of a plate
     print(str(id) + " status: " + status)
     length = 6
@@ -87,7 +93,7 @@ def set_led(id, status="null"):
     set_color = colors[0]
     
     if status == "entry":
-        set_color = colors[1]
+        set_color = color
     
     for i in range(length):
         strip.set_pixel_color(start + i, set_color)
