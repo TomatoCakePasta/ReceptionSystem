@@ -1,0 +1,199 @@
+from rpi5_ws2812.ws2812 import Color, WS2812SpiDriver
+import time
+import colorsys
+import socket
+import threading
+
+led_nums = 220
+k = 1
+current_id = 0
+
+pinpong_idx = 0
+pinpong_k = 1
+
+# define IPv4 socket object
+sv = socket.socket(socket.AF_INET)
+sv.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+rasbpi_ip = "192.168.0.156"
+rasbpi_port = 5000
+sv.bind((rasbpi_ip, rasbpi_port))
+sv.listen()
+
+def handle_accept(server_socket):
+    while True:
+        client, addr = sv.accept()
+        data = client.recv(1024)
+        
+        if len(data) == 0:
+            break
+        
+        data = data.decode("utf-8")
+        # print(data)
+        
+        idx_str, status = data.strip().split(',')
+        idx = int(idx_str)
+        
+        print("id: " + str(idx) + " status: " + status)
+        client.close()
+        
+        set_led(idx, status)
+        
+        
+
+# wait for "accept" in thread
+accept_thread = threading.Thread(target=handle_accept, args=(sv,))
+accept_thread.daemon = True
+accept_thread.start()
+
+def reset():
+    strip.clear()
+    strip.show()
+
+def start_led(delay = 0):
+    strip.show()
+    strip.clear()
+    if delay > 0:
+        time.sleep(delay)
+        
+# test
+def test_all_pattern():
+    test_colors = [
+            Color(255, 0, 0),
+            Color(0, 255, 0),
+            Color(0, 0, 255),
+            Color(0, 255, 255),
+            Color(255, 255, 255)
+        ]
+    # one color change -> red, gree, blue, yellow, white
+    for color in test_colors:
+        print(color)
+        strip.set_all_pixels(color)
+        # strip.set_pixel_color(2, Color(255, 255, 255))
+        start_led(2)
+
+
+# turn on the LED of the corresponding ID
+def set_led(id, status="null"):
+    # size of a plate
+    print(str(id) + " status: " + status)
+    length = 6
+    start = id * length
+    
+    colors = [
+            Color(0, 0, 0),
+            Color(255, 0, 0)
+        ]
+    
+    set_color = colors[0]
+    
+    if status == "entry":
+        set_color = colors[1]
+    
+    for i in range(length):
+        strip.set_pixel_color(start + i, set_color)
+        
+    # start_led()
+
+# pinpong pattern
+def pinpong():
+    global pinpong_idx
+    global pinpong_k
+    
+    pinpong_idx += pinpong_k
+    
+    if (pinpong_idx == 216) or (pinpong_idx == 0):
+        pinpong_k *= -1
+        
+    strip.set_pixel_color(pinpong_idx, Color(255, 0, 0))
+    strip.set_pixel_color(pinpong_idx + 1, Color(255, 0, 0))
+    strip.set_pixel_color(pinpong_idx + 2, Color(255, 0, 0))
+    strip.set_pixel_color(pinpong_idx + 3, Color(255, 0, 0))
+    
+    start_led()
+
+def interpolate_rgb(start, end, steps):
+    gradient = []
+    for i in range(steps):
+        r = int(start[0] + (end[0] - start[0]) * i / steps)
+        g = int(start[1] + (end[1] - start[1]) * i / steps)
+        b = int(start[2] + (end[2] - start[2]) * i / steps)
+        gradient.append(Color(r, g, b))
+    return gradient
+
+def generate_gradient():
+    steps_per_transition = 20
+    colors = [
+        (255, 0, 0),
+        (255, 0, 255),
+        (0, 0, 255),
+        (0, 255, 0),
+    ]
+    gradient = []
+    for i in range(len(colors) - 1):
+        start = colors[i]
+        end = colors[i + 1]
+        gradient += interpolate_rgb(start, end, steps_per_transition)
+    return gradient
+
+gradient = generate_gradient()
+
+if __name__ == "__main__":
+    
+    # Initialize the WS2812 strip with 100 leds and SPI channel 0, CE0
+    strip = WS2812SpiDriver(spi_bus=0, spi_device=0, led_count=led_nums).get_strip()
+    
+    """
+    for i, color in enumerate(gradient):
+        strip.set_pixel_color(i, color)
+    # strip.show()
+    start_led()
+    """
+    
+    #reset()
+    
+    while True:
+        strip.show()
+        
+        """
+        client, addr = sv.accept()
+        data = client.recv(1024)
+        if len(data) == 0:
+            break
+        
+        print(data)
+        client.close()
+        """
+        
+        """
+        strip.set_all_pixels(Color(255, 0, 0))
+        strip.show()
+        time.sleep(2)
+        strip.set_all_pixels(Color(0, 255, 0))
+        strip.show()
+        time.sleep(2)
+        """
+        
+        
+        """
+        set_led(current_id)
+        set_led(current_id + 2)
+        """
+        
+        # test_all_pattern()
+        
+        # pinpong()
+        """
+        strip.show()
+        strip.clear()
+        """
+        # time.sleep(1)
+        
+        
+        """
+        current_id += k
+        
+        if (current_id == 33) or (current_id == 0):
+            print("Turn")
+            k *= -1
+            """
+        
