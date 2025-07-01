@@ -1,4 +1,8 @@
 g_status = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+g_red = 255; // Default color
+g_green = 0; // Default color
+g_blue = 0; // Default color
+
 
 fetch('./json/config.json')
     .then(response => response.json())
@@ -23,7 +27,7 @@ function handleEntryExit(id) {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ id: id, status: 'entry' })
+            body: JSON.stringify({ id: id, status: 'entry', color: { r: g_red, g: g_green, b: g_blue } })
         });
     } else {
         g_status[id] = 0;
@@ -37,4 +41,17 @@ function handleEntryExit(id) {
             body: JSON.stringify({ id: id, status: 'exit' })
         });
     }
+}
+
+function setColor(color) {
+    [g_red, g_green, g_blue] = hexToRgb(color);
+    console.log(`Color set to: ${color}, RGB: ${g_red}, ${g_green}, ${g_blue}`);
+}
+
+function hexToRgb(hex) {
+    const bigint = parseInt(hex.slice(1), 16);
+    const r = (bigint >> 16) & 255;
+    const g = (bigint >> 8) & 255;
+    const b = bigint & 255;
+    return [r, g, b];
 }

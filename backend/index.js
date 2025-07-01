@@ -30,7 +30,8 @@ app.get('/', (req, res) => {
 
 app.post('/entry', (req, res) => {
   const id = req.body.id;
-  console.log(`Entry detected for ID: ${id}`);
+  const { r, g, b } = req.body.color; // Assuming color is sent in the request body
+  console.log(`Entry detected for ID: ${id} ${r}, ${g}, ${b}`);
   // Here you would handle the entry logic, e.g., update a database or send a response
   res.send(`Entry for ID: ${id} recorded.`);
 
@@ -43,7 +44,7 @@ app.post('/entry', (req, res) => {
   client.connect(raspberryPiPort, raspberryPiIp, () => {
     console.log(`Connected to Raspberry Pi at ${raspberryPiIp}:${raspberryPiPort}`);
     // Sending ID and status 1 for entry
-    client.write(`${id},entry`);
+    client.write(`${id},entry,${r},${g},${b}`);
   });
 
   client.on('data', (data) => {
@@ -76,7 +77,7 @@ app.post('/exit', (req, res) => {
   client.connect(raspberryPiPort, raspberryPiIp, () => {
     console.log(`Connected to Raspberry Pi at ${raspberryPiIp}:${raspberryPiPort}`);
     // Sending ID and status 0 for exit
-    client.write(`${id},exit`);
+    client.write(`${id},exit,0,0,0`);
   });
 
   client.on('data', (data) => {
