@@ -11,6 +11,9 @@ current_id = 0
 pinpong_idx = 0
 pinpong_k = 1
 
+num_leds = 10
+g_colors = [Color(0, 0, 0) for _ in range(num_leds)]
+
 # define IPv4 socket object
 sv = socket.socket(socket.AF_INET)
 sv.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -54,7 +57,7 @@ def reset():
 
 def start_led(delay = 0):
     strip.show()
-    strip.clear()
+    # strip.clear()
     if delay > 0:
         time.sleep(delay)
         
@@ -93,10 +96,11 @@ def set_led(id, status="null", color = Color(255, 0, 0)):
     
     set_color = colors[0]
     
+    """
     if status == "entry":
         set_color = color
-
-
+    """
+    set_color = color
 
     for i in range(length):
         strip.set_pixel_color(start + i, set_color)
@@ -104,10 +108,11 @@ def set_led(id, status="null", color = Color(255, 0, 0)):
     # start_led()
 
 # set fade in out
-def set_fade_in_out(id, status="null", color = Color(255, 0, 0), steps=50, delay=0.2):
-    r_target, g_target, b_target = color
-
+def set_fade_in_out(id, status="null", color = Color(255, 0, 0), steps=50, delay=0.1):
     if status == "entry":
+        g_colors[id - 1] = color
+        r_target, g_target, b_target = g_colors[id - 1]
+
         # fade in
         for step in range(steps + 1):
             r = int(r_target * (step / steps))
@@ -118,10 +123,11 @@ def set_fade_in_out(id, status="null", color = Color(255, 0, 0), steps=50, delay
             start_led(delay)
     else:
         # fade out
+        r_target, g_target, b_target = g_colors[id - 1]
         for step in range(steps + 1):
-            r = int(r_target * (1 - step / steps))
-            g = int(g_target * (1 - step / steps))
-            b = int(b_target * (1 - step / steps))
+            r = int(r_target * (1 - (step / steps)))
+            g = int(g_target * (1 - (step / steps)))
+            b = int(b_target * (1 - (step / steps)))
 
             set_led(id, status, Color(r, g, b))
             start_led(delay)
