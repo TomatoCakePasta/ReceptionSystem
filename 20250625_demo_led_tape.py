@@ -38,9 +38,10 @@ def handle_accept(server_socket):
         print("id: " + str(idx) + " status: " + status)
         client.close()
 
-        set_led(idx, status, set_color)
-        
-        
+        # set_led(idx, status, set_color)
+        set_fade_in_out(idx, status, set_color)
+
+
 
 # wait for "accept" in thread
 accept_thread = threading.Thread(target=handle_accept, args=(sv,))
@@ -94,11 +95,36 @@ def set_led(id, status="null", color = Color(255, 0, 0)):
     
     if status == "entry":
         set_color = color
-    
+
+
+
     for i in range(length):
         strip.set_pixel_color(start + i, set_color)
         
     # start_led()
+
+# set fade in out
+def set_fade_in_out(id, status="null", color = Color(255, 0, 0), steps=50, delay=0.2):
+    r_target, g_target, b_target = color
+
+    if status == "entry":
+        # fade in
+        for step in range(steps + 1):
+            r = int(r_target * (step / steps))
+            g = int(g_target * (step / steps))
+            b = int(b_target * (step / steps))
+
+            set_led(id, status, Color(r, g, b))
+            start_led(delay)
+    else:
+        # fade out
+        for step in range(steps + 1):
+            r = int(r_target * (1 - step / steps))
+            g = int(g_target * (1 - step / steps))
+            b = int(b_target * (1 - step / steps))
+
+            set_led(id, status, Color(r, g, b))
+            start_led(delay)
 
 # pinpong pattern
 def pinpong():
